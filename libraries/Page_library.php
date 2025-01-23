@@ -18,7 +18,7 @@ public static function title($config){
         $title=isset($config["title"])?$config["title"]:"Page Title";
     
      $html=<<<HTML
-        <div class="content-header">
+        <div class="content-header" id='section-to-print'>
         <div class="container-fluid">
           <div class="row mb-2">
             <div class="col-sm-6">
@@ -45,7 +45,8 @@ public static function title($config){
         <div class="content">
           <div class="container-fluid">
             <div class="row">
-                <div class="col-lg-$col">
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end "><a href="#" onclick="window.print()" class="btn btn-sm btn-secondary btn_print"><i class="bi bi-printer-fill"></i> Print</a></div>
+            <div class="col-lg-$col">
     HTML;
     return $html;
     }

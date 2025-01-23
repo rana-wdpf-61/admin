@@ -1,50 +1,77 @@
-<?php
-if(isset($_POST["create"])){
-	$errors=[];
+<main class="container">
+	<!--breadcrumb-->
+	<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+		<div class="breadcrumb-title pe-3">CREATE USER</div>
 
-	if(count($errors)==0){
-		$user=new User();
-		$user->name=$_POST["name"];
-		$user->role_id=$_POST["role_id"];
-		$user->password=password_hash($_POST["password"],PASSWORD_BCRYPT);
-		$user->email=$_POST["email"];
-		$user->full_name=$_POST["full_name"];
-		$user->created_at=$now;
-		$user->photo=upload($_FILES["photo"],"img",$user->name);
-		//$user->verify_code=$_POST["txtVerifyCode"];
-		//$user->inactive=isset($_POST["chkInactive"])?1:0;
-		$user->mobile=$_POST["mobile"];
-		$user->updated_at=$now;	
+		<div class="ps-3">
+			<nav aria-label="breadcrumb">
+				<ol class="breadcrumb mb-0 p-0">
+					<li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+					</li>
+					<li class="breadcrumb-item active" aria-current="page">Add a new User</li>
+				</ol>
+			</nav>
+		</div>
 
-		$user->save();
-	}else{
-		 print_r($errors);
-	}
-}
-?>
+		<div class="ms-auto">
+			<div class="btn-group">
+				<a class="btn btn-primary" href="<?php echo $base_url ?>/user/index"><i class="bi bi-arrow-left"></i> Go Back</a>
+
+			</div>
+		</div>
+	</div>
+	<!--end breadcrumb-->
+	<div class="row">
+		<div class="col-xl-11 mx-auto">
+			<div class="card">
+				<div class="card-body">
+					<h6 class="mb-0 text-uppercase">Add a new user</h6>
+					<div class="p-4 border rounded mt-4">
+
+						<form action="<?php echo $base_url ?>/user/save" method="post" class="row g-4 needs-validation" novalidate="" enctype="multipart/form-data">
+
+							<div class="col-md-6">
+								<label for="validationCustom01" class="form-label">Photo <strong style="color: red;">*</strong></label>
+
+								<input type="file" name="photo" class="form-control" required="required" placeholder="Order_total">
+
+								<div class="valid-feedback">Looks good!</div>
+							</div>
 
 
+							<div class="col-md-6">
+								<label for="validationCustom01" class="form-label">User Name <strong style="color: red;">*</strong></label>
+								<select name="name" id="name" class="form-select">
+									<option value="">Select User Name</option>
+									<option value="Super Admin">Super Admin</option>
+									<option value="Admin">Admin</option>
+									<option value="Manager">Manager</option>
+								</select>
+								<!-- <input type="text" name="name" class="form-control" required="required" placeholder="User Name"> -->
+								<div class="valid-feedback">Looks good!</div>
+							</div>
 
-<?php
 
-echo Page::title(["title"=>"Create User"]);
-echo Page::body_open();
-echo Page::context_open(["manage-button"=>"Manage User","route"=>"users"]);
+							<div class="col-md-6">
+								<label for="validationCustom01" class="form-label"> User Eamil <strong style="color: red;">*</strong></label>
+								<input type="email" name="email" class="form-control" required="required" placeholder="User Eamil ">
+								<div class="valid-feedback">Looks good!</div>
+							</div>
 
-echo Form::open(["route"=>"create-user"]);
-	$html="";	
-	echo Form::input(["label"=>"User Name","name"=>"name","type"=>"text","placeholder"=>"Enter Name"]);	
-	echo Form::input(["label"=>"Role","name"=>"role_id","table"=>"roles"]);	
-	echo Form::input(["label"=>"Password","name"=>"password","type"=>"password","placeholder"=>"Enter Password"]);
-	echo Form::input(["label"=>"Email","name"=>"email","type"=>"text","placeholder"=>"Enter Email"]);	
-	echo Form::input(["label"=>"Full Name","name"=>"full_name","type"=>"text","placeholder"=>"Enter Full Name"]);
-	echo Form::input(["label"=>"Photo","name"=>"photo","type"=>"file"]);
-	echo Form::input(["label"=>"Mobile","name"=>"mobile","type"=>"text","placeholder"=>"Mobile"]);
-	echo Form::input(["name"=>"create","class"=>"btn btn-primary offset-2","value"=>"Save","type"=>"submit"]);
-	
-	echo Form::close();
-	echo $html;
+							<div class="col-md-6">
+								<label for="validationCustom01" class="form-label">Phone Number<strong style="color: red;">*</strong></label>
+								<input type="number" name="mobile" class="form-control" required="required" placeholder="Phone Number">
+								<div class="valid-feedback">Looks good!</div>
+							</div>
 
-	echo Page::context_close();
-   echo Page::body_close();
-?>
+
+							<div class="col-12">
+								<button class="btn btn-primary" name="btnSubmit" type="submit"><i class="bi bi-save"></i> Save user</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</main>

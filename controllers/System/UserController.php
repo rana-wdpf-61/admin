@@ -1,101 +1,93 @@
 <?php
 class UserController{
-    function __construct(){
-       
-     }
-   //----Mange-----
-     function index(){       
-       view("system");
-     }
-   //-----Save---- 
-     function create(){
-        view("system");        
-     }
- 
-     function save($data,$file){  
-        global $now;
-        
-        if(isset($data["create"])){
-            $errors=[];
-
-            if(count($errors)==0){
-                $user=new User();
-                $user->name=$_POST["name"];
-                $user->role_id=$_POST["role_id"];
-                $user->password=password_hash($_POST["password"],PASSWORD_BCRYPT);
-                $user->email=$_POST["email"];
-                $user->full_name=$_POST["full_name"];
-                $user->created_at=$now;
-                $user->photo=upload($_FILES["photo"],"img",$user->name);
-                //$user->verify_code=$_POST["txtVerifyCode"];
-                //$user->inactive=isset($_POST["chkInactive"])?1:0;
-                $user->mobile=$_POST["mobile"];
-                $user->updated_at=$now;	
-        
-                $user->save();
-            }else{
-                 print_r($errors);
-            }
-        }
-        redirect("index");
-     }
- //------Edit-----
-     function edit($id){       
-        view("system",User::find($id));
-     }
- 
-     function update($data,$file){
-       global $now,$base_url;
-
-        $errors=[];
-        if(count($errors)==0){
-        
-		
-            $user=new User();
-            $user->id=$_POST["id"];
-            $user->name=$_POST["name"];
-            $user->role_id=$_POST["role_id"];
-            $user->password=password_hash($_POST["password"],PASSWORD_BCRYPT);
-            $user->email=$_POST["email"];
-            $user->full_name=$_POST["full_name"];
-            $user->created_at=$now;
-            if($_FILES["photo"]["name"]!=""){
-                $user->photo=File::upload($_FILES["photo"], "img",$user->name);
-            }else{
-                $user->photo=User::find($_POST["id"])->photo;
-            }
-            $user->verify_code=$_POST["verify_code"];
-            $user->inactive=isset($_POST["inactive"])?1:0;
-            $user->mobile=$_POST["mobile"];
-    
-            $user->update();
-        }else{
-             print_r($errors);
-        }
-
-        redirect("index");
-     }
-
- //------Delete-----
-     function confirm($id){     
+    function index(){
         view("system");
-     }
-
-     function delete($id){
-        
-         if(isset($id)){
-             User::delete($id);
-             redirect("index");
-         }
-     }
-  //------Show-----------
-     function show($id){
-        view("system",User::find($id));
-     }
-
-  //-------Search--------
+    }
 
 
+    function create(){
+        view("system");
+    }
 
- }
+    function save(){
+        if(isset($_POST["btnSubmit"])){
+            $name=$_POST["name"];
+            $role_id=$_POST["role_id"];
+            $password=$_POST["password"];
+            $email=$_POST["email"];
+            $full_name=$_POST["full_name"];
+            $photo=$_FILES["photo"]["name"];
+            $verify_code=$_POST["verify_code"];
+            $inactive=$_POST["inactive"];
+            $mobile=$_POST["mobile"];
+            $ip=$_POST["ip"];
+            $email_verified_at=$_POST["email_verified_at"];
+            $remember_token=$_POST["remember_token"];
 
+            $result = new User(null, $name, $role_id, $password, $email, $full_name, $photo, $verify_code, $inactive, $mobile, $ip, $email_verified_at, $remember_token);
+
+            $result->save();
+        }
+
+        redirect("index");
+    }
+
+
+    function edit(){
+        $id=$_GET["id"];
+       $user = User::search($id);
+        view('system', $user);
+    }
+
+
+    function update(){
+        if(isset($_POST["btnUpdate"])){
+            $id=$_POST["id"];
+            $name=$_POST["name"];
+            $role_id=$_POST["role_id"];
+            $password=$_POST["password"];
+            $email=$_POST["email"];
+            $full_name=$_POST["full_name"];
+            $photo=$_FILES["photo"]["name"];
+            $verify_code=$_POST["verify_code"];
+            $inactive=$_POST["inactive"];
+            $mobile=$_POST["mobile"];
+            $ip=$_POST["ip"];
+            $email_verified_at=$_POST["email_verified_at"];
+            $remember_token=$_POST["remember_token"];
+
+            $result = new User($id, $name, $role_id, $password, $email, $full_name, $photo, $verify_code, $inactive, $mobile, $ip, $email_verified_at, $remember_token);
+
+            $result->update();
+        }
+
+        redirect("index");
+
+    }
+
+    function delete(){
+        $id=$_GET["id"];
+        $user = User::search($id);
+        view("system", $user);
+    }
+
+    function delete_confirm(){
+        if(isset($_POST["btnDelete"])){
+            $id=$_POST["id"];
+            User::delete($id);
+        }
+
+        redirect("index");
+
+    }
+
+
+    function search(){
+        view("system");
+    }
+
+
+}
+
+
+?>

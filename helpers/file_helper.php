@@ -18,8 +18,6 @@
                     if(!move_uploaded_file($file["tmp_name"],"$path/{$name}.{$ext}")){
                         copy($file["tmp_name"],"$path/{$name}.{$ext}");
                     }
-                        
-                  
                 }else{
                     return -1;
                 }

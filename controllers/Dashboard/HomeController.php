@@ -1,16 +1,10 @@
-<?php
+<?php  
 class HomeController{
-    public function __construct(){
 
+    function index(){
+        view("dashboard");
     }
-    public function index(){
-       view("dashboard");
-    }
-    public function manager(){
-       view("dashboard");
-    }
-
-    
 }
+
 
 ?>

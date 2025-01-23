@@ -1,137 +1,148 @@
 <?php
-class Warehouse extends Model implements JsonSerializable{
-	public $id;
-	public $name;
-	public $city;
-	public $contact;
 
-	public function __construct(){
-	}
-	public function set($id,$name,$city,$contact){
-		$this->id=$id;
-		$this->name=$name;
-		$this->city=$city;
-		$this->contact=$contact;
+class Warehouse
+{
+    public $id;
+    public $name;
+    public $phone;
+    public $location;
+    public $address;
+    public $created_at;
+    public $updated_at;
 
-	}
-	public function save(){
-		global $db,$tx;
-		$db->query("insert into {$tx}warehouses(name,city,contact)values('$this->name','$this->city','$this->contact')");
-		return $db->insert_id;
-	}
-	public function update(){
-		global $db,$tx;
-		$db->query("update {$tx}warehouses set name='$this->name',city='$this->city',contact='$this->contact' where id='$this->id'");
-	}
-	public static function delete($id){
-		global $db,$tx;
-		$db->query("delete from {$tx}warehouses where id={$id}");
-	}
-	public function jsonSerialize(){
-		return get_object_vars($this);
-	}
-	public static function all(){
-		global $db,$tx;
-		$result=$db->query("select id,name,city,contact from {$tx}warehouses");
-		$data=[];
-		while($warehouse=$result->fetch_object()){
-			$data[]=$warehouse;
-		}
-			return $data;
-	}
-	public static function pagination($page=1,$perpage=10,$criteria=""){
-		global $db,$tx;
-		$top=($page-1)*$perpage;
-		$result=$db->query("select id,name,city,contact from {$tx}warehouses $criteria limit $top,$perpage");
-		$data=[];
-		while($warehouse=$result->fetch_object()){
-			$data[]=$warehouse;
-		}
-			return $data;
-	}
-	public static function count($criteria=""){
-		global $db,$tx;
-		$result =$db->query("select count(*) from {$tx}warehouses $criteria");
-		list($count)=$result->fetch_row();
-			return $count;
-	}
-	public static function find($id){
-		global $db,$tx;
-		$result =$db->query("select id,name,city,contact from {$tx}warehouses where id='$id'");
-		$warehouse=$result->fetch_object();
-			return $warehouse;
-	}
-	static function get_last_id(){
-		global $db,$tx;
-		$result =$db->query("select max(id) last_id from {$tx}warehouses");
-		$warehouse =$result->fetch_object();
-		return $warehouse->last_id;
-	}
-	public function json(){
-		return json_encode($this);
-	}
-	public function __toString(){
-		return "		Id:$this->id<br> 
-		Name:$this->name<br> 
-		City:$this->city<br> 
-		Contact:$this->contact<br> 
-";
-	}
+    public function __construct($id, $name, $phone, $location, $address)
+    {
+        $this->id = $id;
+        $this->name = $name;
+        $this->phone = $phone;
+        $this->location = $location;
+        $this->address = $address;
+    }
 
-	//-------------HTML----------//
 
-	static function html_select($name="cmbWarehouse"){
+
+    function save()
+    {
+        global $db, $base_url, $tx;
+        $result = $db->query("insert into `{$tx}warehouse`(name,phone,location,address)values('{$this->name}','{$this->phone}','{$this->location}','{$this->address}')");
+        return $result;
+    }
+
+
+
+    static function displayAll()
+    {
+        global $db, $base_url, $tx;
+        $sql = $db->query("select * from `{$tx}warehouse`");
+
+        $result=$sql->fetch_all();
+
+        return $result;
+    }
+
+
+
+
+
+    static function display()
+    {
+        global $db, $base_url, $tx;
+        $result = $db->query("select * from `{$tx}warehouse`");
+
+        while ($row = $result->fetch_object()) {
+            echo "  <tr>
+                <td>$row->id</td>
+                <td>$row->name</td>
+                <td>$row->phone</td>
+                <td>$row->location</td>
+                <td>$row->address</td>
+                <td>
+                  <div class='table-actions d-flex align-items-center gap-3 fs-6'>
+                    <a href='{$base_url}/warehouse/views/$row->id' class='text-primary' data-bs-toggle='tooltip' data-bs-placement='bottom' aria-label='Views'><i class='bi bi-eye-fill'></i></a>
+                    <a href='{$base_url}/warehouse/edit/$row->id' class='text-warning' data-bs-toggle='tooltip' data-bs-placement='bottom' aria-label='Edit'><i class='bi bi-pencil-fill'></i></a>
+                    <a href='{$base_url}/warehouse/delete/$row->id' class='text-danger' data-bs-toggle='tooltip' data-bs-placement='bottom' aria-label='Delete'><i class='bi bi-trash-fill'></i></a>
+                  </div>
+                </td>
+                </tr>";
+        }
+
+        return $result;
+    }
+
+    function update()
+    {
+        global $db, $tx;
+
+        $result = $db->query("update `{$tx}warehouse` set name='{$this->name}', phone='{$this->phone}', location='{$this->location}', address='{$this->address}' where id='{$this->id}'");
+
+        return $result;
+    }
+
+
+
+
+    static function search($id)
+    {
+        global $db, $tx;
+        $result = $db->query("select * from `{$tx}warehouse` where id='$id'");
+
+        return $result->fetch_object();
+    }
+
+
+
+
+    static function delete($id)
+    {
+        global $db, $tx;
+        $result = $db->query("delete from `{$tx}warehouse` where id='$id'");
+
+        return $result;
+    }
+
+
+    static function html_select($name="cmbWarehouse"){
 		global $db,$tx;
-		$html="<select id='$name' name='$name'> ";
-		$result =$db->query("select id,name from {$tx}warehouses");
+		$html="<select id='$name' name='$name' class='form-select'> ";
+		$result =$db->query("select id,name from {$tx}warehouse");
 		while($warehouse=$result->fetch_object()){
 			$html.="<option value ='$warehouse->id'>$warehouse->name</option>";
 		}
 		$html.="</select>";
 		return $html;
 	}
-	static function html_table($page = 1,$perpage = 10,$criteria="",$action=true){
-		global $db,$tx,$base_url;
-		$count_result =$db->query("select count(*) total from {$tx}warehouses $criteria ");
-		list($total_rows)=$count_result->fetch_row();
-		$total_pages = ceil($total_rows /$perpage);
-		$top = ($page - 1)*$perpage;
-		$result=$db->query("select id,name,city,contact from {$tx}warehouses $criteria limit $top,$perpage");
-		$html="<table class='table'>";
-			$html.="<tr><th colspan='3'>".Html::link(["class"=>"btn btn-success","route"=>"warehouse/create","text"=>"New Warehouse"])."</th></tr>";
-		if($action){
-			$html.="<tr><th>Id</th><th>Name</th><th>City</th><th>Contact</th><th>Action</th></tr>";
-		}else{
-			$html.="<tr><th>Id</th><th>Name</th><th>City</th><th>Contact</th></tr>";
-		}
-		while($warehouse=$result->fetch_object()){
-			$action_buttons = "";
-			if($action){
-				$action_buttons = "<td><div class='btn-group' style='display:flex;'>";
-				$action_buttons.= Event::button(["name"=>"show", "value"=>"Show", "class"=>"btn btn-info", "route"=>"warehouse/show/$warehouse->id"]);
-				$action_buttons.= Event::button(["name"=>"edit", "value"=>"Edit", "class"=>"btn btn-primary", "route"=>"warehouse/edit/$warehouse->id"]);
-				$action_buttons.= Event::button(["name"=>"delete", "value"=>"Delete", "class"=>"btn btn-danger", "route"=>"warehouse/confirm/$warehouse->id"]);
-				$action_buttons.= "</div></td>";
-			}
-			$html.="<tr><td>$warehouse->id</td><td>$warehouse->name</td><td>$warehouse->city</td><td>$warehouse->contact</td> $action_buttons</tr>";
-		}
-		$html.="</table>";
-		$html.= pagination($page,$total_pages);
-		return $html;
-	}
-	static function html_row_details($id){
-		global $db,$tx,$base_url;
-		$result =$db->query("select id,name,city,contact from {$tx}warehouses where id={$id}");
-		$warehouse=$result->fetch_object();
-		$html="<table class='table'>";
-		$html.="<tr><th colspan=\"2\">Warehouse Show</th></tr>";
-		$html.="<tr><th>Id</th><td>$warehouse->id</td></tr>";
-		$html.="<tr><th>Name</th><td>$warehouse->name</td></tr>";
-		$html.="<tr><th>City</th><td>$warehouse->city</td></tr>";
-		$html.="<tr><th>Contact</th><td>$warehouse->contact</td></tr>";
 
-		$html.="</table>";
-		return $html;
-	}
+    
+  static function get_last_id(){
+    global $db,$tx;
+    $result =$db->query("select max(id) last_id from {$tx}warehouse");
+    $warehouse =$result->fetch_object();
+    return $warehouse->last_id;
 }
+
+
+public static function find($id){
+    global $db,$tx;
+    $result =$db->query("select id,name,phone,location,address,created_at,updated_at from {$tx}warehouse where id='$id'");
+    $warehouse=$result->fetch_object();
+        return $warehouse;
+}
+
+
+public static function all()
+{
+  global $db, $tx;
+  $result = $db->query("select id,name,phone,location,address,created_at, updated_at from {$tx}warehouse");
+  $data = [];
+  while ($warehouse = $result->fetch_object()) {
+    $data[] = $warehouse;
+  }
+  return $data;
+}
+
+
+}
+
 ?>
+
+

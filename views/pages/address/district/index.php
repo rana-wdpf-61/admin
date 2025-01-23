@@ -1,8 +1,0 @@
-<?php  
-
-
-echo District::display();
-
-
-
-?>

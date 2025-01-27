@@ -53,6 +53,20 @@ class Production extends Model implements JsonSerializable{
 		}
 			return $data;
 	}
+
+	public static function all_Production_join(){
+		global $db,$tx;
+		$result=$db->query("select core_production .*, core_products.name as product, core_status.name as status, core_uom.name as uom from core_production
+		left join core_products on core_production.product_id = core_products.id
+		left join core_status on core_production.status_id = core_status.id
+		left join core_uom on core_production.uom_id = core_uom.id");
+		$data=[];
+		while($production=$result->fetch_object()){
+			$data[]=$production;
+		}
+			return $data;
+	}
+
 	public static function pagination($page=1,$perpage=10,$criteria=""){
 		global $db,$tx;
 		$top=($page-1)*$perpage;

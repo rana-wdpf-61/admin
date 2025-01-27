@@ -30,6 +30,31 @@ class Stock
         return $result;
     }
 
+    public static function all()
+    {
+        global $db, $tx;
+        $result = $db->query("select id, product_id, transaction_type_id, warehouse_id, qty, remark, created_at,updated_at from {$tx}stock");
+        $data = [];
+        while ($product = $result->fetch_object()) {
+            $data[] = $product;
+        }
+        return $data;
+    }
+
+
+    public static function all_Join_Query()
+    {
+        global $db, $tx;
+        $result = $db->query("select SUM(core_stock.qty) as quantity, core_stock.*, core_products.name as product, core_warehouse.address as warehouse, core_uom.name as uom from core_stock
+              left join core_uom on core_stock.uom_id = core_uom.id
+			        left join core_products on core_stock.product_id = core_products.id
+              left join core_warehouse on core_stock.warehouse_id = core_warehouse.id GROUP BY core_stock.product_id");
+        $data = [];
+        while ($product = $result->fetch_object()) {
+            $data[] = $product;
+        }
+        return $data;
+    }
 
 
 

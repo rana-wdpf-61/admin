@@ -6,7 +6,13 @@ class ProductionApi
 	{
 		echo json_encode(["production" => Production::all()]);
 	}
+
+	function index2()
+	{
+		echo json_encode(["production" => Production::all_Production_join()]);
+	}
 	function pagination($data)
+	
 	{
 		$page = $data["page"];
 		$perpage = $data["perpage"];
@@ -162,4 +168,76 @@ class ProductionApi
 		}
 		echo json_encode(["success" => "yes"]);
 	}
-}
+
+
+	function processreact($data)
+	{
+
+		print_r($data);
+
+		$data = $data;
+		$start_date = date("Y-m-d", strtotime($data["start_date"]));
+		$end_date = date("Y-m-d", strtotime($data["end_date"]));
+
+		$production = new Production();
+		$production->material_id = ""; //$data["material_id"];
+		$production->uom_id = 7;  // $data["uom_id"];
+		$production->product_id = $data["product_id"];
+		$production->production_date = $start_date; //$data["production_date"];
+		$production->qty =$data ["qty"];
+		$production->unit_cost = "";   //$data[""];
+		$production->total_cost = $data["total_cost"];
+		$production->status_id = 2;   //$data["status_id"];
+
+		if($data["product_id"] !=""){
+			$production_last_id = $production->save();
+			echo json_encode(["success" => "yes"]);
+		}
+		
+
+		$productions = $data["products"];
+		$total_cost = $data["total_cost"];
+		$uom_id = $data["uom_id"];
+		foreach ($productions as $value) {
+			$productiondetail = new ProductionDetail();
+			$productiondetail->material_id = "";  //$value ["item_id"];
+			$productiondetail->uom_id = 7; //$value ["uom_id"];
+			$productiondetail->production_id = $production_last_id;
+			$productiondetail->product_id = $value["product_id"];
+			$productiondetail->qty = $value["qty"];
+			$productiondetail->start_date = $start_date;    //start_date=$value ["start_date"];
+			$productiondetail->end_date = $end_date;    //end_date=$value ["end_date"];
+			$productiondetail->worker_assigned = "";  //$value ["worker_assigned"];
+			$productiondetail->status_id = 2; //$value ["status_id"];
+			$productiondetail->unit_cost = $value["price"];
+			$productiondetail->total_cost = $total_cost;
+			$productiondetail->notes = "";  // $value ["notes"];//$value ["notes"];
+
+			$productiondetail->save();
+
+			$transaction_type_id = 5;     //$data["transaction_type_id"];
+			$warehouse_id =	1;
+			$remark = "Build";   //$data["remark"];
+			$product_id=$value['product_id'];
+			$qty = $value['qty'];
+			$result = new Stock(null, $product_id, $transaction_type_id, $warehouse_id, $qty, $remark);
+			$result->save();
+			
+		}
+		echo json_encode(["success" => "yes"]);
+	}
+
+
+
+	
+
+
+
+
+
+	}
+
+
+
+
+
